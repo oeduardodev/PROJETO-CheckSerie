@@ -8,10 +8,18 @@ export const style = StyleSheet.create({
     paddingTop: 62,
     marginBottom: 24,
   },
+
   logo: {
     height: 34,
     width: 134,
   },
+
+  TextClearButton: {
+    color: "#b7b7b7ff",
+    fontWeight: 600,
+    fontSize: 12,
+  },
+
   form: {
     padding: 24,
     paddingHorizontal: 16,
@@ -19,6 +27,7 @@ export const style = StyleSheet.create({
     gap: 7,
     width: "100%",
   },
+
   content: {
     flex: 1,
     width: "100%",
@@ -26,5 +35,24 @@ export const style = StyleSheet.create({
     borderTopLeftRadius: 18,
     borderTopRightRadius: 18,
     padding: 24,
+    paddingTop: 32,
+  },
+
+  header: {
+    width: "100%",
+    flexDirection: "row",
+    gap: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#373737ff",
+    paddingBottom: 12,
+  },
+
+  clearButton: {
+    marginLeft: "auto",
+    backgroundColor: "#2e2e2eff",
+    padding: 5,
+    borderRadius: 20,
+    paddingLeft: 16,
+    paddingRight: 16,
   },
 });

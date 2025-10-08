@@ -1,9 +1,13 @@
 import { StyleSheet } from "react-native";
 
 export const style = StyleSheet.create({
-  container: {},
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+  },
   text: {
-    color: "#12699bff",
+    color: "#148bcfff",
     fontSize: 12,
     fontWeight: 600,
   },
