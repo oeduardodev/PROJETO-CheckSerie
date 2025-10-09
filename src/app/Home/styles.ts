@@ -55,4 +55,22 @@ export const style = StyleSheet.create({
     paddingLeft: 16,
     paddingRight: 16,
   },
+
+  separator: {
+    width: "100%",
+    height: 1,
+    backgroundColor: "#667a9584",
+    marginVertical: 16,
+  },
+
+  listContent: {
+    paddingTop: 28,
+    paddingBottom: 22,
+  },
+
+  empty: {
+    fontSize: 14,
+    color: "#667a9584",
+    alignItems: "center",
+  },
 });
