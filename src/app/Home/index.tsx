@@ -12,19 +12,20 @@ import { Input } from "@/components/Input";
 import { Filter } from "@/components/Filter";
 import { FilterStatus } from "@/types/FilterStatus";
 import { Item } from "@/components/Item";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { itemsStorage, ItemStorage } from "@/storage/itemsStorage";
 
 export default function Home() {
   const [filter, setFilter] = useState<FilterStatus>(FilterStatus.NO_WATCH);
   const [description, setDescription] = useState("");
-  const [items, setItems] = useState<any>([]);
+  const [items, setItems] = useState<ItemStorage[]>([]);
 
   const FILTER_STATUS = [
     { status: FilterStatus.WATCHED, label: "Assistido" },
     { status: FilterStatus.NO_WATCH, label: "Não Assistido" },
   ];
 
-  function handleAddItem() {
+  async function handleAddItem() {
     if (!description.trim()) {
       return Alert.alert("Adicionar", "Informe a descrição para adicionar.");
     }
@@ -35,10 +36,70 @@ export default function Home() {
       status: FilterStatus.NO_WATCH,
     };
 
-    setItems((prevState) => [...prevState, newItem]);
+    await itemsStorage.addMyItem(newItem);
+    await getItems();
 
-    console.log(newItem);
+    setFilter(FilterStatus.NO_WATCH);
+    setDescription("");
+    Alert.alert(
+      "Parabéns",
+      `Você adicionou ${newItem.description} à sua lista de séries.`
+    );
   }
+
+  async function getItems() {
+    try {
+      const response = await itemsStorage.get();
+      setItems(response);
+    } catch (error) {
+      console.log("Erro ao carregar itens:", error);
+      Alert.alert("Erro", "Não foi possível carregar os itens.");
+    }
+  }
+
+  async function handleRemoveItem(itemId: string) {
+    try {
+      await itemsStorage.removeItem(itemId);
+      await getItems();
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível remover o item.");
+    }
+  }
+
+  async function handleToggleItemStatus(id: string) {
+    try {
+      await itemsStorage.toggleStatusItem(id);
+      await getItems();
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível atualizar o status do item.");
+    }
+  }
+
+  function handleClearItems() {
+    Alert.alert("Deletar", "Deseja realmente remover todos os itens?", [
+      {
+        text: "Não",
+        style: "cancel",
+      },
+      {
+        text: "Sim",
+        onPress: async () => {
+          try {
+            await itemsStorage.clearAllItens();
+            setItems([]);
+          } catch (error) {
+            Alert.alert("Erro", "Não foi possível limpar os itens.");
+          }
+        },
+      },
+    ]);
+  }
+
+  useEffect(() => {
+    getItems();
+  }, []);
+
+  const filteredItems = items.filter((item) => item.status === filter);
 
   return (
     <View style={style.container}>
@@ -46,7 +107,8 @@ export default function Home() {
 
       <View style={style.form}>
         <Input
-          placeholder="O que você precisa comprar?"
+          placeholder="O que você precisa assistir?"
+          value={description}
           onChangeText={setDescription}
         />
         <Button title="Adicionar" onPress={handleAddItem} />
@@ -63,16 +125,23 @@ export default function Home() {
             />
           ))}
 
-          <TouchableOpacity style={style.clearButton}>
+          <TouchableOpacity
+            style={style.clearButton}
+            onPress={handleClearItems}
+          >
             <Text style={style.TextClearButton}>Limpar</Text>
           </TouchableOpacity>
         </View>
 
         <FlatList
-          data={items}
+          data={filteredItems} // ✅ lista filtrada
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <Item data={item} onRemove={() => console.log("remover")} />
+            <Item
+              data={item}
+              onRemove={() => handleRemoveItem(item.id)}
+              onChangeStatus={() => handleToggleItemStatus(item.id)}
+            />
           )}
           showsVerticalScrollIndicator={false}
           ItemSeparatorComponent={() => <View style={style.separator} />}
