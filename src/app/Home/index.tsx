@@ -52,7 +52,6 @@ export default function Home() {
       const response = await itemsStorage.get();
       setItems(response);
     } catch (error) {
-      console.log("Erro ao carregar itens:", error);
       Alert.alert("Erro", "Não foi possível carregar os itens.");
     }
   }
